@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit AI review settings: https://docs.coderabbit.ai/reference/configuration
+language: en-US
+tone_instructions: >-
+  Be concise and concrete. Prefer a few high-signal findings about correctness,
+  safety and user-facing behavior over style nitpicks that rustfmt or clippy
+  already enforce.
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!Cargo.lock"
+    - "!docs/src/images/**"
+    - "!book/**"
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        Lictor rotates Herdr focus and mirrors live terminals. Project rules:
+        - Code, comments, CLI messages, tests and docs are in English.
+        - Mirrors are strictly read-only: never send input to, attach to, take
+          control of, resize, move or close a source pane. Lictor may only close
+          tabs and panes it created and recorded as owned.
+        - Herdr IDs are opaque handles; never derive them from counters.
+    - path: "src/**/*.rs"
+      instructions: |
+        - Validate arguments before mutating Herdr state; invalid combinations
+          exit with code 2 (exit codes are documented in docs/src/cli.md).
+        - Selections must follow target IDs, never row positions.
+        - Jobs: check cancellation around timers and socket waits; no focus
+          change may happen after a stop is acknowledged; sidebar restoration
+          runs before the stop notification.
+        - Viewers must apply ANSI deltas in order and never drop one.
+        - TUI changes must restore raw mode, the cursor and the alternate screen
+          on every exit path, and keep text-entry modes from triggering actions.
+    - path: "src/cli.rs"
+      instructions: |
+        Any change to flags or behavior must be reflected in `lictor --help`,
+        docs/src/cli.md and, when relevant, the README and other book chapters.
+    - path: "tests/**"
+      instructions: |
+        Tests must use the fake Herdr socket in tests/support.py or a disposable
+        named session matching `lictor-proof-*`. Never target the default Herdr
+        session or a contributor's real agents.
+    - path: "docs/src/**/*.md"
+      instructions: |
+        This is the mdBook. Check that commands and options match the current
+        CLI, that relative links resolve, and that descriptions match tested
+        behavior rather than intentions.
+    - path: ".github/workflows/**"
+      instructions: |
+        Third-party actions are pinned by full commit SHA with a version
+        comment; keep it that way. Use least-privilege, job-scoped permissions
+        and never print or persist credentials.
+chat:
+  auto_reply: true
