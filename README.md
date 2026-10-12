@@ -7,6 +7,7 @@
 Rotate Herdr's focus through your workspaces, tabs, panes and agents, or open a live
 split view that mirrors two rotating lanes side by side while the originals keep running.
 
+[![Release](https://img.shields.io/github/v/release/SyscallBrain/lictor?style=flat-square&label=release&color=7aa2f7&labelColor=1a1b26)](https://github.com/SyscallBrain/lictor/releases/latest)
 [![CI](https://img.shields.io/github/actions/workflow/status/SyscallBrain/lictor/ci.yml?branch=main&style=flat-square&label=CI&logo=github&color=9ece6a&labelColor=1a1b26)](https://github.com/SyscallBrain/lictor/actions/workflows/ci.yml)
 [![Book](https://img.shields.io/badge/docs-the%20Lictor%20book-7aa2f7?style=flat-square&logo=mdbook&labelColor=1a1b26)](https://syscallbrain.github.io/lictor/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-bb9af7?style=flat-square&labelColor=1a1b26)](LICENSE)
@@ -98,7 +99,16 @@ Lictor talks to Herdr's socket API natively, so it doesn't need `jq`, Python or 
 
 ## Installation
 
-From GitHub, with Cargo:
+Download a prebuilt Linux x86_64 binary from the
+[latest release](https://github.com/SyscallBrain/lictor/releases/latest):
+
+```bash
+curl -LO https://github.com/SyscallBrain/lictor/releases/download/v0.1.0/lictor-0.1.0-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf lictor-0.1.0-x86_64-unknown-linux-gnu.tar.gz
+install -m 755 lictor-0.1.0-x86_64-unknown-linux-gnu/lictor ~/.local/bin/
+```
+
+Or build it from GitHub with Cargo:
 
 ```bash
 cargo install --git https://github.com/SyscallBrain/lictor --locked

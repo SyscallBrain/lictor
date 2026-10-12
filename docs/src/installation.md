@@ -2,7 +2,14 @@
 
 You need Linux and a running Herdr session. Building from source requires Rust 1.88 or newer; running a prebuilt executable does not require Rust. The repository pins Rust 1.99.0 for its tested development toolchain. Herdr 0.9.3 is the initial integration baseline. Live observation also uses a compatible `herdr` command in `PATH`.
 
-Install the latest version from GitHub with Cargo:
+Download the prebuilt Linux x86_64 binary from the [latest release](https://github.com/SyscallBrain/lictor/releases/latest), check it against `SHA256SUMS`, and put `lictor` on your `PATH`:
+
+```bash
+tar -xzf lictor-VERSION-x86_64-unknown-linux-gnu.tar.gz
+install -m 755 lictor-VERSION-x86_64-unknown-linux-gnu/lictor ~/.local/bin/
+```
+
+Or install the latest version from GitHub with Cargo:
 
 ```bash
 cargo install --git https://github.com/SyscallBrain/lictor --locked
