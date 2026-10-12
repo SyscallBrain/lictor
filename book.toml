@@ -1,0 +1,18 @@
+[book]
+title = "The Lictor Book"
+authors = ["Tiago Correia"]
+language = "en"
+src = "docs/src"
+description = "Automatic Herdr rotation, keyboard-driven selection, and live split observation."
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+site-url = "/lictor/"
+additional-css = ["docs/src/theme/tokyo-night.css"]
+
+[output.html.search]
+enable = true

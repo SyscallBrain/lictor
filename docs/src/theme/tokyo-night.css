@@ -1,0 +1,18 @@
+.navy {
+    --bg: #1a1b26;
+    --fg: #c0caf5;
+    --sidebar-bg: #16161e;
+    --sidebar-fg: #a9b1d6;
+    --sidebar-active: #7aa2f7;
+    --links: #7aa2f7;
+    --inline-code-color: #bb9af7;
+    --quote-bg: #24283b;
+    --quote-border: #565f89;
+    --table-border-color: #565f89;
+    --table-header-bg: #24283b;
+    --table-alternate-bg: #202230;
+    --searchbar-bg: #24283b;
+    --searchbar-fg: #c0caf5;
+    --searchresults-header-fg: #9ece6a;
+    --searchresults-border-color: #565f89;
+}
