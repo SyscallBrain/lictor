@@ -26,6 +26,12 @@ For jobs, test cancellation during timers/socket requests and ensure no further 
 
 For TUI changes, cover key modes, selection identity during refresh, small terminals, and cleanup of raw mode/cursor/alternate screen. Verify usability with the actual terminal as well as the controller state tests.
 
+## Automated reviews and dependency updates
+
+Every pull request gets an AI review from [CodeRabbit](https://www.coderabbit.ai/), configured in `.coderabbit.yaml` with this project's rules. While the repository is small, reviews may need a manual start: comment `@coderabbitai review` on the pull request. Treat its findings like any reviewer's: fix what is right, and reply when you disagree. You can also ask it questions by mentioning `@coderabbitai`.
+
+[Dependabot](https://docs.github.com/en/code-security/dependabot) (`.github/dependabot.yml`) opens weekly pull requests for Rust crates and the SHA-pinned GitHub Actions; minor and patch bumps are grouped into one pull request. Security updates for vulnerable crates arrive as soon as an advisory is published. Dependency pull requests must pass CI like any other; major version bumps may need code or documentation changes.
+
 A pull request should explain the concrete problem, resulting behavior, relevant validation, and remaining limitations. Do not include private terminal transcripts or authentication data in fixtures or screenshots.
 
 By contributing, you agree that your contribution is distributed under the project's MIT License.

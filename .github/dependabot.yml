@@ -1,0 +1,31 @@
+# Dependabot keeps Rust crates and the SHA-pinned GitHub Actions current.
+# Security updates for vulnerable crates are enabled in the repository settings
+# and are opened as soon as an advisory appears, independent of this schedule.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+    labels: [dependencies, rust]
+    groups:
+      # One PR for routine minor/patch bumps; major versions get their own PR
+      # because they may need code changes.
+      rust-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    labels: [dependencies, github-actions]
+    groups:
+      github-actions:
+        patterns: ["*"]
