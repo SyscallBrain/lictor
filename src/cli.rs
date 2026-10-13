@@ -345,7 +345,7 @@ rotation stops. Needs tmux or X11 with xdotool."
     pub quiet: bool,
 
     /// Print a man page or shell completion script (used for packaging)
-    #[arg(long = "generate", value_name = "WHAT", hide = true,
+    #[arg(long = "generate", value_name = "WHAT", hide = true, exclusive = true,
           value_parser = ["man", "bash", "zsh", "fish"])]
     pub generate: Option<String>,
 

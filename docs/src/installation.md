@@ -13,7 +13,7 @@ sha256sum -c SHA256SUMS --ignore-missing
 ### Debian, Ubuntu and derivatives
 
 ```bash
-sudo apt install ./lictor_VERSION-1_amd64.deb
+sudo apt install ./lictor_*_amd64.deb
 ```
 
 The package installs `/usr/bin/lictor`, the man page and the completions, which bash, zsh and fish pick up automatically. It suggests `libnotify-bin`, `tmux` and `xdotool` for the optional features. Remove it with `sudo apt remove lictor`.
@@ -23,8 +23,8 @@ The package installs `/usr/bin/lictor`, the man page and the completions, which 
 The binary in `lictor-VERSION-x86_64-unknown-linux-musl.tar.gz` is statically linked, so it runs on any x86_64 Linux: Arch, Fedora, openSUSE, Alpine, or an older glibc system. For your user only:
 
 ```bash
-tar -xzf lictor-VERSION-x86_64-unknown-linux-musl.tar.gz
-cd lictor-VERSION-x86_64-unknown-linux-musl
+tar -xzf lictor-*-x86_64-unknown-linux-musl.tar.gz
+cd lictor-*-x86_64-unknown-linux-musl
 install -Dm755 lictor ~/.local/bin/lictor
 install -Dm644 lictor.1.gz ~/.local/share/man/man1/lictor.1.gz
 install -Dm644 completions/lictor.bash ~/.local/share/bash-completion/completions/lictor

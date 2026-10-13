@@ -92,6 +92,10 @@ See [sidebar controls](sidebar.md) for platform support.
 
 Invalid combinations are rejected before anything changes, with a hint on how to fix them.
 
+## Packaging
+
+`lictor --generate man|bash|zsh|fish` prints the man page or a shell completion script to standard output. It is hidden from `--help` because the release packages already install these files; use it when packaging Lictor yourself. It cannot be combined with other options.
+
 ## Exit codes
 
 | Code | Meaning |
