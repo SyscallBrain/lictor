@@ -121,6 +121,7 @@ fn interval(value: &str) -> Result<String, String> {
 #[command(
     name = "lictor",
     version,
+    author,
     about = "Rotate Herdr focus, or mirror live terminals side by side in a split tab.",
     long_about = "Rotate Herdr focus between workspaces, tabs, panes and agents, or mirror them \
 live in a new split tab without moving the originals.\n\nWithout arguments, Lictor opens the \
@@ -343,6 +344,11 @@ rotation stops. Needs tmux or X11 with xdotool."
     #[arg(short = 'q', long = "quiet", help_heading = "Output")]
     pub quiet: bool,
 
+    /// Print a man page or shell completion script (used for packaging)
+    #[arg(long = "generate", value_name = "WHAT", hide = true,
+          value_parser = ["man", "bash", "zsh", "fish"])]
+    pub generate: Option<String>,
+
     // General -----------------------------------------------------------------
     /// Show help (--help for details)
     #[arg(short = 'h', long = "help", action = ArgAction::Help, help_heading = "General")]
@@ -499,5 +505,98 @@ impl Args {
             return Err("--close-on-exit only applies with --split".into());
         }
         Ok(())
+    }
+}
+
+/// Writes the man page or a completion script for packaging. Help sections are
+/// rendered without terminal colors, since roff and shells cannot use them.
+pub fn generate(what: &str, out: &mut dyn std::io::Write) -> std::io::Result<()> {
+    use clap::CommandFactory;
+    let mut command = Args::command()
+        .after_help(strip_ansi(&help_section(EXAMPLES, false)))
+        .after_long_help(strip_ansi(&help_section(MORE_EXAMPLES, true)));
+    let shell = match what {
+        "man" => return man_page(command, out),
+        "bash" => clap_complete::Shell::Bash,
+        "zsh" => clap_complete::Shell::Zsh,
+        _ => clap_complete::Shell::Fish,
+    };
+    clap_complete::generate(shell, &mut command, "lictor", out);
+    Ok(())
+}
+
+/// The man page uses conventional sections instead of clap_mangen's generic
+/// "EXTRA" section for the long help epilogue.
+fn man_page(command: clap::Command, out: &mut dyn std::io::Write) -> std::io::Result<()> {
+    let man = clap_mangen::Man::new(command);
+    man.render_title(out)?;
+    man.render_name_section(out)?;
+    man.render_synopsis_section(out)?;
+    man.render_description_section(out)?;
+    man.render_options_section(out)?;
+    let escape = |text: &str| text.replace('\\', "\\e").replace('-', "\\-");
+    writeln!(out, ".SH EXAMPLES")?;
+    for (command, comment) in MORE_EXAMPLES {
+        writeln!(out, ".TP\n\\fB{}\\fR\n{}", escape(command), escape(comment))?;
+    }
+    writeln!(
+        out,
+        ".SH SELECTORS\nNumbers and names are resolved in the selected groups: workspace \\fB2\\fR or \
+         \\fBapi\\fR, tab \\fB1:2\\fR, pane \\fB2.1\\fR, agent \\fBclaude\\fR (every agent of that \
+         type). Prefix a kind to be explicit: \\fBworkspace=\\fR, \\fBtab=\\fR, \\fBagent=\\fR, \
+         \\fBpane=\\fR."
+    )?;
+    writeln!(out, ".SH EXIT STATUS")?;
+    for (code, meaning) in [
+        ("0", "Success or clean stop."),
+        ("1", "Runtime failure."),
+        ("2", "Invalid arguments."),
+        (
+            "3",
+            "No targets, every target disappeared, or no job to control.",
+        ),
+        ("4", "Herdr is unavailable."),
+    ] {
+        writeln!(out, ".TP\n\\fB{code}\\fR\n{meaning}")?;
+    }
+    writeln!(
+        out,
+        ".SH SEE ALSO\n\\fBherdr\\fR(1). The Lictor book: https://syscallbrain.github.io/lictor/"
+    )?;
+    man.render_version_section(out)?;
+    man.render_authors_section(out)
+}
+
+fn strip_ansi(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars();
+    while let Some(c) = chars.next() {
+        if c == '\x1b' {
+            // Skip a CSI sequence: ESC [ parameters final-byte.
+            for c in chars.by_ref() {
+                if c.is_ascii_alphabetic() {
+                    break;
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generated_man_page_and_completions_are_plain_text() {
+        for what in ["man", "bash", "zsh", "fish"] {
+            let mut out = Vec::new();
+            generate(what, &mut out).unwrap();
+            let text = String::from_utf8(out).unwrap();
+            assert!(text.contains("split"), "{what}");
+            assert!(!text.contains('\x1b'), "{what} contains ANSI escapes");
+        }
     }
 }

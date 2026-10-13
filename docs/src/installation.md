@@ -2,14 +2,41 @@
 
 You need Linux and a running Herdr session. Building from source requires Rust 1.88 or newer; running a prebuilt executable does not require Rust. The repository pins Rust 1.99.0 for its tested development toolchain. Herdr 0.9.3 is the initial integration baseline. Live observation also uses a compatible `herdr` command in `PATH`.
 
-Download the prebuilt Linux x86_64 binary from the [latest release](https://github.com/SyscallBrain/lictor/releases/latest), check it against `SHA256SUMS`, and put `lictor` on your `PATH`:
+## Prebuilt packages
+
+Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships two packages for Linux x86_64, with the same statically linked binary, the `lictor(1)` man page, and bash, zsh and fish completions. Check downloads against the release's `SHA256SUMS`:
 
 ```bash
-tar -xzf lictor-VERSION-x86_64-unknown-linux-gnu.tar.gz
-install -m 755 lictor-VERSION-x86_64-unknown-linux-gnu/lictor ~/.local/bin/
+sha256sum -c SHA256SUMS --ignore-missing
 ```
 
-Or install the latest version from GitHub with Cargo:
+### Debian, Ubuntu and derivatives
+
+```bash
+sudo apt install ./lictor_VERSION-1_amd64.deb
+```
+
+The package installs `/usr/bin/lictor`, the man page and the completions, which bash, zsh and fish pick up automatically. It suggests `libnotify-bin`, `tmux` and `xdotool` for the optional features. Remove it with `sudo apt remove lictor`.
+
+### Any other distribution
+
+The binary in `lictor-VERSION-x86_64-unknown-linux-musl.tar.gz` is statically linked, so it runs on any x86_64 Linux: Arch, Fedora, openSUSE, Alpine, or an older glibc system. For your user only:
+
+```bash
+tar -xzf lictor-VERSION-x86_64-unknown-linux-musl.tar.gz
+cd lictor-VERSION-x86_64-unknown-linux-musl
+install -Dm755 lictor ~/.local/bin/lictor
+install -Dm644 lictor.1.gz ~/.local/share/man/man1/lictor.1.gz
+install -Dm644 completions/lictor.bash ~/.local/share/bash-completion/completions/lictor
+install -Dm644 completions/lictor.fish ~/.config/fish/completions/lictor.fish
+install -Dm644 completions/_lictor ~/.local/share/zsh/site-functions/_lictor
+```
+
+For zsh, make sure that directory is on your `fpath` before `compinit` runs, for example in `~/.zshrc`: `fpath=(~/.local/share/zsh/site-functions $fpath)`. For a system-wide install, use `/usr/local/bin`, `/usr/local/share/man/man1` and your distribution's completion directories with `sudo`.
+
+## From source
+
+Install the latest version from GitHub with Cargo:
 
 ```bash
 cargo install --git https://github.com/SyscallBrain/lictor --locked

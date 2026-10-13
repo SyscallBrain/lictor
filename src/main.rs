@@ -25,6 +25,15 @@ async fn main() -> ExitCode {
         return viewer(std::env::args().skip(2).collect()).await;
     }
     let args = Args::parse();
+    if let Some(what) = &args.generate {
+        return match cli::generate(what, &mut io::stdout()) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(error) => {
+                eprintln!("lictor: {error}");
+                ExitCode::from(1)
+            }
+        };
+    }
     if let Err(e) = args.validate() {
         // Reported like clap's own errors: same style, usage tip and exit code 2.
         use clap::CommandFactory;
