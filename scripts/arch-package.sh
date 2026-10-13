@@ -14,11 +14,12 @@ checksum=$(sha256sum "$tarball" | cut -d' ' -f1)
 sed -e "s/@VERSION@/$version/" -e "s/@SHA256@/$checksum/" packaging/arch/PKGBUILD > "$build/PKGBUILD"
 cp "$tarball" "$build/"
 
-if command -v makepkg >/dev/null; then
+# makepkg refuses to run as root, so root uses the container path too.
+if command -v makepkg >/dev/null && [ "$(id -u)" -ne 0 ]; then
   (cd "$build" && makepkg --clean --nodeps --force)
 else
-  # makepkg refuses to run as root; build as an unprivileged user, then give
-  # the files back to the calling user so the cleanup trap can remove them.
+  # Build as an unprivileged user, then give the files back to the calling
+  # user so the cleanup trap can remove them.
   docker run --rm -v "$build:/build" -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
     archlinux:base-devel bash -euc '
       useradd --create-home builder
