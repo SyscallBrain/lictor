@@ -266,8 +266,10 @@ fn parse_keys(value: &toml::Value) -> Result<Vec<String>, String> {
 
 fn sidebar_keys(path: &Path) -> Result<Vec<String>, String> {
     let value = match fs::read_to_string(path) {
+        // Parse a whole document: in toml 0.9+, `Value::from_str` reads a single value.
         Ok(text) => text
-            .parse::<toml::Value>()
+            .parse::<toml::Table>()
+            .map(toml::Value::Table)
             .map_err(|error| format!("invalid Herdr key configuration: {error}"))?,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             toml::Value::Table(Default::default())
@@ -690,16 +692,18 @@ mod tests {
 
     #[test]
     fn custom_prefix_and_list_binding_use_first_key() {
-        let value = "[keys]\nprefix = 'ctrl+a'\ntoggle_sidebar = ['prefix+shift+b', 'alt+b']"
-            .parse()
-            .unwrap();
+        let value = toml::Value::Table(
+            "[keys]\nprefix = 'ctrl+a'\ntoggle_sidebar = ['prefix+shift+b', 'alt+b']"
+                .parse()
+                .unwrap(),
+        );
         assert_eq!(parse_keys(&value).unwrap(), ["ctrl+a", "shift+b"]);
         assert_eq!(translated_key("shift+b", false), "S-b");
     }
 
     #[test]
     fn disabled_toggle_is_not_replaced_with_default() {
-        let value = "[keys]\ntoggle_sidebar = ''".parse().unwrap();
+        let value = toml::Value::Table("[keys]\ntoggle_sidebar = ''".parse().unwrap());
         assert!(parse_keys(&value).is_err());
     }
 
