@@ -99,13 +99,19 @@ Lictor talks to Herdr's socket API natively, so it doesn't need `jq`, Python or 
 
 ## Installation
 
-Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships two packages for
-Linux x86_64. Both include the man page (`man lictor`) and bash, zsh and fish completions.
+Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships three packages for
+Linux x86_64. All include the man page (`man lictor`) and bash, zsh and fish completions.
 
 **Debian, Ubuntu and derivatives:** download `lictor_VERSION-1_amd64.deb`, then:
 
 ```bash
 sudo apt install ./lictor_*_amd64.deb
+```
+
+**Arch Linux and derivatives:** download `lictor-VERSION-1-x86_64.pkg.tar.zst`, then:
+
+```bash
+sudo pacman -U lictor-*-x86_64.pkg.tar.zst
 ```
 
 **Any other distribution:** the static binary in `lictor-VERSION-x86_64-unknown-linux-musl.tar.gz`
