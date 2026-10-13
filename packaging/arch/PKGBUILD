@@ -1,0 +1,29 @@
+# Maintainer: Tiago Correia <ggspydersc@gmail.com>
+#
+# Template used by scripts/arch-package.sh, which fills in the version and the
+# checksum of the release's static musl archive before running makepkg.
+pkgname=lictor
+pkgver=@VERSION@
+pkgrel=1
+pkgdesc="Rotate Herdr focus, or mirror live terminals and coding agents side by side"
+arch=('x86_64')
+url="https://github.com/SyscallBrain/lictor"
+license=('MIT')
+optdepends=('libnotify: desktop notification when a rotation stops'
+            'tmux: sidebar control for Herdr running inside tmux'
+            'xdotool: sidebar control on X11')
+# The binary is statically linked and already stripped.
+options=('!strip' '!debug')
+source=("lictor-$pkgver-x86_64-unknown-linux-musl.tar.gz")
+sha256sums=('@SHA256@')
+
+package() {
+  cd "lictor-$pkgver-x86_64-unknown-linux-musl"
+  install -Dm755 lictor "$pkgdir/usr/bin/lictor"
+  install -Dm644 lictor.1.gz "$pkgdir/usr/share/man/man1/lictor.1.gz"
+  install -Dm644 completions/lictor.bash "$pkgdir/usr/share/bash-completion/completions/lictor"
+  install -Dm644 completions/_lictor "$pkgdir/usr/share/zsh/site-functions/_lictor"
+  install -Dm644 completions/lictor.fish "$pkgdir/usr/share/fish/vendor_completions.d/lictor.fish"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

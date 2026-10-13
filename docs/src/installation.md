@@ -4,7 +4,7 @@ You need Linux and a running Herdr session. Building from source requires Rust 1
 
 ## Prebuilt packages
 
-Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships two packages for Linux x86_64, with the same statically linked binary, the `lictor(1)` man page, and bash, zsh and fish completions. Check downloads against the release's `SHA256SUMS`:
+Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships three packages for Linux x86_64, with the same statically linked binary, the `lictor(1)` man page, and bash, zsh and fish completions. Check downloads against the release's `SHA256SUMS`:
 
 ```bash
 sha256sum -c SHA256SUMS --ignore-missing
@@ -17,6 +17,14 @@ sudo apt install ./lictor_*_amd64.deb
 ```
 
 The package installs `/usr/bin/lictor`, the man page and the completions, which bash, zsh and fish pick up automatically. It suggests `libnotify-bin`, `tmux` and `xdotool` for the optional features. Remove it with `sudo apt remove lictor`.
+
+### Arch Linux and derivatives
+
+```bash
+sudo pacman -U lictor-*-x86_64.pkg.tar.zst
+```
+
+The package installs the same files in Arch's standard locations, with the license in `/usr/share/licenses/lictor/`. Its optional dependencies are `libnotify`, `tmux` and `xdotool`. Remove it with `sudo pacman -R lictor`.
 
 ### Any other distribution
 

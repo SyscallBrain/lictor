@@ -52,7 +52,7 @@ jobs:
         run: |
           rustup target add x86_64-unknown-linux-musl
           cargo install cargo-deb --version "$CARGO_DEB_VERSION" --locked
-      - name: Build the static binary and the Debian package
+      - name: Build the static binary, Debian and Arch packages
         run: scripts/dist.sh
       - name: Smoke-test the packages
         run: |
@@ -62,6 +62,13 @@ jobs:
           lictor --version
           dpkg -L lictor | grep -qx /usr/share/man/man1/lictor.1.gz
           sudo apt-get remove -y lictor
+          docker run --rm -v "$PWD/dist:/dist:ro" archlinux:base-devel bash -euc '
+            pacman -Sy --noconfirm --needed namcap >/dev/null
+            namcap /dist/*.pkg.tar.zst
+            pacman -U --noconfirm /dist/*.pkg.tar.zst
+            lictor --version
+            pacman -Ql lictor | grep -q /usr/share/man/man1/lictor.1.gz
+            pacman -R --noconfirm lictor'
       - name: Upload reviewable release artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -69,6 +76,7 @@ jobs:
           path: |
             dist/*.tar.gz
             dist/*.deb
+            dist/*.pkg.tar.zst
             dist/SHA256SUMS
           if-no-files-found: error
       - name: Publish the GitHub release
@@ -83,5 +91,5 @@ jobs:
           else
             set -- --generate-notes
           fi
-          gh release create "$TAG" dist/*.tar.gz dist/*.deb dist/SHA256SUMS \
+          gh release create "$TAG" dist/*.tar.gz dist/*.deb dist/*.pkg.tar.zst dist/SHA256SUMS \
             --repo "$GITHUB_REPOSITORY" --verify-tag --title "Lictor $TAG" "$@"

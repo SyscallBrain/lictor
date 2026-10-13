@@ -2,8 +2,10 @@
 # Builds the release files in dist/:
 #   lictor-VERSION-x86_64-unknown-linux-musl.tar.gz  static binary for any Linux
 #   lictor_VERSION-1_amd64.deb                       Debian/Ubuntu package
+#   lictor-VERSION-1-x86_64.pkg.tar.zst              Arch Linux package
 #   SHA256SUMS
-# Requires: rustup target x86_64-unknown-linux-musl, cargo-deb.
+# Requires: rustup target x86_64-unknown-linux-musl, cargo-deb, and makepkg or
+# Docker for the Arch package.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -32,7 +34,8 @@ tar -C dist -czf "dist/$package.tar.gz" --owner=0 --group=0 --mode=go-w "$packag
 rm -rf "dist/${package:?}"
 
 cargo deb --no-build --target "$target" --output dist/
+scripts/arch-package.sh "$version"
 
 cd dist
-sha256sum -- *.tar.gz *.deb > SHA256SUMS
+sha256sum -- *.tar.gz *.deb *.pkg.tar.zst > SHA256SUMS
 cat SHA256SUMS
