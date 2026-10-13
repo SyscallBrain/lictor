@@ -11,6 +11,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.99.0
+  CARGO_DEB_VERSION: 3.8.0
 
 jobs:
   linux:
@@ -37,28 +38,37 @@ jobs:
           python3 tests/cli_acceptance.py target/release/lictor
           python3 tests/controller_acceptance.py target/release/lictor
           python3 tests/lifecycle_acceptance.py target/release/lictor
-      - name: Package the Linux executable
+      - name: Check the tag matches Cargo.toml
+        if: github.ref_type == 'tag'
         env:
-          RELEASE_REF: ${{ github.ref_name }}
-          RELEASE_REF_TYPE: ${{ github.ref_type }}
+          TAG: ${{ github.ref_name }}
         run: |
           version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')
-          if [ "$RELEASE_REF_TYPE" = tag ] && [ "$RELEASE_REF" != "v$version" ]; then
-            echo "Release tag does not match Cargo.toml version" >&2
+          if [ "$TAG" != "v$version" ]; then
+            echo "Release tag $TAG does not match Cargo.toml version $version" >&2
             exit 1
           fi
-          package="lictor-$version-x86_64-unknown-linux-gnu"
-          mkdir -p "dist/$package"
-          cp target/release/lictor LICENSE README.md "dist/$package/"
-          tar -C dist -czf "dist/$package.tar.gz" "$package"
-          cd dist
-          sha256sum "$package.tar.gz" > SHA256SUMS
+      - name: Install packaging tools
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+          cargo install cargo-deb --version "$CARGO_DEB_VERSION" --locked
+      - name: Build the static binary and the Debian package
+        run: scripts/dist.sh
+      - name: Smoke-test the packages
+        run: |
+          tar -xzf dist/*.tar.gz -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP"/lictor-*/lictor --version
+          sudo apt-get install -y ./dist/*.deb
+          lictor --version
+          dpkg -L lictor | grep -qx /usr/share/man/man1/lictor.1.gz
+          sudo apt-get remove -y lictor
       - name: Upload reviewable release artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: lictor-linux-x86_64
           path: |
             dist/*.tar.gz
+            dist/*.deb
             dist/SHA256SUMS
           if-no-files-found: error
       - name: Publish the GitHub release
@@ -73,5 +83,5 @@ jobs:
           else
             set -- --generate-notes
           fi
-          gh release create "$TAG" dist/*.tar.gz dist/SHA256SUMS \
+          gh release create "$TAG" dist/*.tar.gz dist/*.deb dist/SHA256SUMS \
             --repo "$GITHUB_REPOSITORY" --verify-tag --title "Lictor $TAG" "$@"

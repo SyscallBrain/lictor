@@ -28,6 +28,8 @@ tokio = { version = "1", features = ["full"] }
 tokio-util = "0.7"
 unicode-width = "0.2"
 vt100 = "0.16"
+clap_complete = "4.6"
+clap_mangen = "0.3"
 
 [dev-dependencies]
 tempfile = "3"
@@ -35,3 +37,30 @@ tempfile = "3"
 [[bin]]
 name = "lictor"
 path = "src/main.rs"
+
+[profile.release]
+# Smaller release binaries without debug symbols.
+strip = true
+
+# Debian package, built by scripts/dist.sh with cargo-deb from the static musl
+# binary, so it installs on any Debian or Ubuntu release.
+[package.metadata.deb]
+maintainer = "Tiago Correia <ggspydersc@gmail.com>"
+copyright = "2026, Tiago Correia"
+license-file = ["LICENSE", "0"]
+section = "utils"
+priority = "optional"
+suggests = "libnotify-bin, tmux, xdotool"
+extended-description = """\
+Lictor rotates Herdr's focus through workspaces, tabs, panes and coding agents, \
+or opens a live split tab that mirrors two rotating lanes side by side while the \
+original terminals keep running. Requires a running Herdr session \
+(https://herdr.dev/); split mirrors also need the herdr command in PATH."""
+assets = [
+    ["target/release/lictor", "usr/bin/", "755"],
+    ["target/dist-assets/lictor.1.gz", "usr/share/man/man1/", "644"],
+    ["target/dist-assets/lictor.bash", "usr/share/bash-completion/completions/lictor", "644"],
+    ["target/dist-assets/_lictor", "usr/share/zsh/vendor-completions/", "644"],
+    ["target/dist-assets/lictor.fish", "usr/share/fish/vendor_completions.d/", "644"],
+    ["README.md", "usr/share/doc/lictor/", "644"],
+]

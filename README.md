@@ -99,14 +99,27 @@ Lictor talks to Herdr's socket API natively, so it doesn't need `jq`, Python or 
 
 ## Installation
 
-Download a prebuilt Linux x86_64 binary from the
-[latest release](https://github.com/SyscallBrain/lictor/releases/latest):
+Each [release](https://github.com/SyscallBrain/lictor/releases/latest) ships two packages for
+Linux x86_64. Both include the man page (`man lictor`) and bash, zsh and fish completions.
+
+**Debian, Ubuntu and derivatives:** download `lictor_VERSION-1_amd64.deb`, then:
 
 ```bash
-curl -LO https://github.com/SyscallBrain/lictor/releases/download/v0.1.0/lictor-0.1.0-x86_64-unknown-linux-gnu.tar.gz
-tar -xzf lictor-0.1.0-x86_64-unknown-linux-gnu.tar.gz
-install -m 755 lictor-0.1.0-x86_64-unknown-linux-gnu/lictor ~/.local/bin/
+sudo apt install ./lictor_*_amd64.deb
 ```
+
+**Any other distribution:** the static binary in `lictor-VERSION-x86_64-unknown-linux-musl.tar.gz`
+runs on any x86_64 Linux, including Alpine and older glibc systems:
+
+```bash
+tar -xzf lictor-*-x86_64-unknown-linux-musl.tar.gz
+cd lictor-*-x86_64-unknown-linux-musl
+install -Dm755 lictor ~/.local/bin/lictor
+install -Dm644 lictor.1.gz ~/.local/share/man/man1/lictor.1.gz
+```
+
+Verify downloads with `sha256sum -c SHA256SUMS --ignore-missing`. To install the shell completions
+by hand, see [installation](https://syscallbrain.github.io/lictor/installation.html) in the book.
 
 Or build it from GitHub with Cargo:
 

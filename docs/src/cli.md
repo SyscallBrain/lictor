@@ -92,6 +92,17 @@ See [sidebar controls](sidebar.md) for platform support.
 
 Invalid combinations are rejected before anything changes, with a hint on how to fix them.
 
+## Packaging
+
+`lictor --generate FORMAT` prints the man page or a shell completion script to standard output. `FORMAT` is one of `man`, `bash`, `zsh` or `fish`:
+
+```bash
+lictor --generate man | gzip -9n > lictor.1.gz
+lictor --generate zsh > _lictor
+```
+
+ It is hidden from `--help` because the release packages already install these files; use it when packaging Lictor yourself. It cannot be combined with other options.
+
 ## Exit codes
 
 | Code | Meaning |
